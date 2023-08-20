@@ -205,7 +205,7 @@ def save_results(alg=None, inner_alg=None, qg=None, tl=None, t=None, blimit=None
     if alg is None: alg = args.algorithm
     if qg is None: qg = args.query_generation
     if fs is None: fs = args.findscope
-    if fc is None: fs = args.findc
+    if fc is None: fc = args.findc
     if bench is None: bench = benchmark_name
     if start_time is None: start_time = start
 
@@ -227,7 +227,7 @@ def save_results(alg=None, inner_alg=None, qg=None, tl=None, t=None, blimit=None
 
     print("C_L size: ", len(toplevel_list(conacq.C_l.constraints)))
 
-    res_name = ["results/results"]
+    res_name = ["results"]
     res_name.append(alg)
 
     # results_file = "results/results_" + args.algorithm + "_"
@@ -248,7 +248,8 @@ def save_results(alg=None, inner_alg=None, qg=None, tl=None, t=None, blimit=None
         res_name.append(f"bl{str(blimit)}")
 
     res_name.append(f"fs{str(fs)}")
-    res_name.append(f"fc{str(fc)}")
+    if fc != None:
+        res_name.append(f"fc{str(fc)}")
 
     res_name.append(str(conacq.obj))
 
@@ -264,19 +265,19 @@ def save_results(alg=None, inner_alg=None, qg=None, tl=None, t=None, blimit=None
     else:
         results = ""
 
-    results += str(len(toplevel_list(conacq.C_l.constraints))) + "\t" + str(conacq.queries_count) + "\t" + str(
-        conacq.top_lvl_queries) \
-               + "\t" + str(conacq.generated_queries) + "\t" + str(conacq.findscope_queries) + "\t" + str(
-        conacq.findc_queries)
+    results += str(len(toplevel_list(conacq.C_l.constraints))) + "\t" + str(conacq.metrics.queries_count) + "\t" + str(
+        conacq.metrics.top_lvl_queries) \
+               + "\t" + str(conacq.metrics.generated_queries) + "\t" + str(conacq.metrics.findscope_queries) + "\t" + str(
+        conacq.metrics.findc_queries)
 
-    avg_size = round(conacq.average_size_queries / conacq.queries_count, 4) if conacq.queries_count > 0 else 0
+    avg_size = round(conacq.metrics.average_size_queries / conacq.metrics.queries_count, 4) if conacq.metrics.queries_count > 0 else 0
 
-    avg_qgen_time = round(conacq.generation_time / conacq.generated_queries, 4) if conacq.generated_queries > 0 else 0
+    avg_qgen_time = round(conacq.metrics.generation_time / conacq.metrics.generated_queries, 4) if conacq.metrics.generated_queries > 0 else 0
     results += "\t" + str(avg_size) + "\t" + str(avg_qgen_time) \
-               + "\t" + str(round(average_waiting_time, 4)) + "\t" + str(round(conacq.max_waiting_time, 4)) + "\t" + \
+               + "\t" + str(round(average_waiting_time, 4)) + "\t" + str(round(conacq.metrics.max_waiting_time, 4)) + "\t" + \
                str(round(total_time, 4))
 
-    results += "\t" + str(conacq.converged) + "\n"
+    results += "\t" + str(conacq.metrics.converged) + "\n"
 
     f.write(results)
     f.close()
