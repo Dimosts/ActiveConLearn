@@ -11,8 +11,6 @@ from ortools.sat.python import cp_model as ort
 from utils import find_suitable_vars_subset2
 
 partial = False
-cliques_cutoff = 0.5
-
 
 class ConAcq:
 
@@ -138,7 +136,6 @@ class ConAcq:
     def remove_from_bias(self, C):
 
         # Remove all the constraints from network C from B
-
         if self.obj == "proba":
             for c in C:
                 self.increase_count_bias(c)
@@ -146,8 +143,10 @@ class ConAcq:
         prev_B_length = len(self.B)
         self.B = list(set(self.B) - set(C))
 
+        if self.debug_mode:
+            print(f"Removed from bias: {C}")
         if not (prev_B_length - len(C) == len(self.B)):
-            raise Exception(f'something was not removed properly')
+            raise Exception(f'Something was not removed properly: {prev_B_length} - {len(C)} = {len(self.B)}')
 
     def add_to_cl(self, c):
 
@@ -159,13 +158,14 @@ class ConAcq:
 
     def remove(self, B, C):
 
-        # Remove all constraints from network C from B
-
+        # Remove all constraints in network C from B
         lenB = len(B)
+        lenC = len(C)
+        lenB_init = len(B)
+
         i = 0
 
         while i < lenB:
-
             if any(B[i] is c2 for c2 in C):
                 # B[i] in set(C) in condition is slower
 
@@ -173,6 +173,10 @@ class ConAcq:
                 i -= 1
                 lenB -= 1
             i += 1
+
+        if lenB_init - len(B) != lenC:
+            raise Exception("Removing constraints from Bias did not result in reducing its size")
+
 
     def remove_scope_from_bias(self, scope):
 
@@ -471,11 +475,13 @@ class ConAcq:
 
         # Post the query to the user/oracle
         if self.debug_mode:
+            print("Y: ", Y)
             print(f"Query({self.metrics.queries_count}: is this a solution?")
             print(value)
-            print(f"Query: is this a solution?")
-            print(np.array([[v if v != 0 else -0 for v in row] for row in value]))
+            #print(f"Query: is this a solution?")
+            #print(np.array([[v if v != 0 else -0 for v in row] for row in value]))
 
+            print("B:", get_con_subset(self.B,Y))
             print("violated from B: ", get_kappa(self.B, Y))
             print("violated from C_T: ", get_kappa(self.C_T, Y))
             print("violated from C_L: ", get_kappa(self.C_l.constraints, Y))
@@ -486,7 +492,8 @@ class ConAcq:
         # Check if at least one constraint is violated or not
         ret = all([check_value(c) for c in suboracle])
 
-        # print("Answer: ", ("Yes" if ret else "No"))
+        if self.debug_mode:
+            print("Answer: ", ("Yes" if ret else "No"))
 
         # For the evaluation metrics
 
@@ -543,11 +550,13 @@ class ConAcq:
     # This is the version of the FindScope function that was presented in "Constraint acquisition through Partial Queries", AIJ 2023
     def findScope2(self, e, R, Y, kappaB):
 
+        if not frozenset(kappaB).issubset(self.B):
+            raise Exception(f"kappaB given in findscope {call} is not part of B: \nkappaB: {kappaB}, \nB: {self.B}")
+
         # if ask(e_R) = yes: B \setminus K(e_R)
         # need to project 'e' down to vars in R,
         # will show '0' for None/na/" ", should create object nparray instead
         kappaBR = get_con_subset(kappaB, list(R))
-
         if len(kappaBR) > 0:
 
             e_R = np.zeros(e.shape, dtype=int)
@@ -563,7 +572,6 @@ class ConAcq:
             if self.ask_query(e_R):
                 self.remove_from_bias(kappaBR)
                 self.remove(kappaB, kappaBR)
-
             else:
                 return set()
 
@@ -581,19 +589,29 @@ class ConAcq:
         RY1 = R.union(Y1)
 
         kappaBRY = kappaB.copy()
+        kappaBRY_prev = kappaBRY.copy()
         kappaBRY1 = get_con_subset(kappaBRY, RY1)
 
         if len(kappaBRY1) < len(kappaBRY):
             S1 = self.findScope2(e, RY1, Y2, kappaBRY)
+
+        # remove from original kappaB
+        kappaBRY_removed = set(kappaBRY_prev) - set(kappaBRY)
+        self.remove(kappaB, kappaBRY_removed)
 
         # R U S1
         RS1 = R.union(S1)
 
         kappaBRS1 = get_con_subset(kappaBRY, RS1)
         kappaBRS1Y1 = get_con_subset(kappaBRY, RS1.union(Y1))
+        kappaBRS1Y1_prev = kappaBRS1Y1.copy()
 
         if len(kappaBRS1) < len(kappaBRY):
             S2 = self.findScope2(e, RS1, Y1, kappaBRS1Y1)
+
+        # remove from original kappaB
+        kappaBRS1Y1_removed = set(kappaBRS1Y1_prev) - set(kappaBRS1Y1)
+        self.remove(kappaB, kappaBRS1Y1_removed)
 
         return S1.union(S2)
 

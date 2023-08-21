@@ -133,3 +133,77 @@ main.py [-h] -a {quacq,mquacq,mquacq2,mquacq2-a,growacq}
   -np NUM_PROFESSORS, --num-professors NUM_PROFESSORS
                         Only relevant when the chosen benchmark is exam
                         timetabling - the number of professors
+
+## Reproducing our CP2023 experiments
+
+###[Q1] Table 2
+
+#### Baseline
+
+	python main.py -a mquacq2-a -b jsudoku -qg baseline
+
+	python main.py -a mquacq2-a -b random495 -qg baseline
+
+	python main.py -a mquacq2-a -b murder -qg baseline
+
+	python main.py -a mquacq2-a -b golomb8 -qg baseline
+
+	python main.py -a mquacq2-a -b "job_shop_scheduling" -nj "10" -nm "3" -hor "15" -s "0" -qg baseline
+
+#### TQ-Gen
+
+	python main.py -a mquacq2-a -b jsudoku -qg tqgen -t 2
+
+	python main.py -a mquacq2-a -b random495 -qg tqgen -t 2
+
+	python main.py -a mquacq2-a -b murder -qg tqgen -t 2
+
+	python main.py -a mquacq2-a -b golomb8 -qg tqgen -t 2
+
+	python main.py -a mquacq2-a -b "job_shop_scheduling" -nj "10" -nm "3" -hor "15" -s "0" -qg tqgen -t 2
+
+#### PQ-Gen
+
+	python main.py -a mquacq2-a -b jsudoku -qg pqgen
+
+	python main.py -a mquacq2-a -b random495 -qg pqgen
+
+	python main.py -a mquacq2-a -b murder -qg pqgen
+
+	python main.py -a mquacq2-a -b golomb8 -qg pqgen
+
+	python main.py -a mquacq2-a -b "job_shop_scheduling" -nj "10" -nm "3" -hor "15" -s "0" -qg pqgen
+
+
+###[Q2] Table 3: GrowAcq + MQuAcq-2
+
+	python main.py -a growacq -ia mquacq2-a -b jsudoku -qg pqgen
+
+	python main.py -a growacq -ia mquacq2-a -b random495 -qg pqgen
+
+	python main.py -a growacq -ia mquacq2-a -b murder -qg pqgen
+
+	python main.py -a growacq -ia mquacq2-a -b golomb8 -qg pqgen
+
+	python main.py -a growacq -ia mquacq2-a -b "job_shop_scheduling" -nj "10" -nm "3" -hor "15" -s "0" -qg pqgen
+
+
+###[Q3 - Q4] Table 3: GrowAcq + MQuAcq-2 guided
+
+	python main.py -a growacq -ia mquacq2-a -b jsudoku -qg pqgen -obj proba
+
+	python main.py -a growacq -ia mquacq2-a -b random495 -qg pqgen -obj proba
+
+	python main.py -a growacq -ia mquacq2-a -b murder -qg pqgen -obj proba
+
+	python main.py -a growacq -ia mquacq2-a -b golomb8 -qg pqgen -obj proba
+
+	python main.py -a growacq -ia mquacq2-a -b "job_shop_scheduling" -nj "10" -nm "3" -hor "15" -s "0" -qg pqgen -obj proba
+
+
+###[Q5] Table 4: GrowAcq + MQuAcq-2 guided
+
+	python main.py -a growacq -ia mquacq2-a -b "job_shop_scheduling" -nj "15" -nm "11" -hor "40" -s "0" -qg pqgen -obj proba
+	
+	python main.py -a growacq -ia mquacq2-a -b "job_shop_scheduling" -nj "19" -nm "12" -hor "40" -s "0" -qg pqgen -obj proba
+

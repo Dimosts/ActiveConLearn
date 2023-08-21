@@ -6,6 +6,7 @@ from cpmpy.expressions.utils import all_pairs
 from ConAcq import ConAcq
 from utils import construct_bias, get_kappa, get_scope, get_relation
 
+cliques_cutoff = 0.5
 
 class MQuAcq2(ConAcq):
     def __init__(self, gamma, grid, ct=list(), bias=list(), X=set(), C_l=set(), qg="pqgen", obj="proba",
@@ -57,8 +58,7 @@ class MQuAcq2(ConAcq):
                     # B <- B \setminus K_B(e)
                     self.remove_from_bias(kappaB)
                     kappaB = set()
-                    if self.debug_mode:
-                        print("removed from B")
+
                 else:  # user says UNSAT
 
                     answer = False
@@ -111,13 +111,7 @@ class MQuAcq2(ConAcq):
             else:  # User says UNSAT
 
                 # c <- findC(e, findScope(e, {}, grid, false))
-                c = self.findC(pscope)
-
-                if c is None:
-                    raise Exception("findC did not find any, collapse")
-                else:
-                    self.add_to_cl(c)
-                    self.remove_scope_from_bias(pscope)
+                c = self.call_findc(pscope)
 
                 NScopes.add(tuple(pscope))
 
