@@ -58,7 +58,7 @@ class MQuAcq(ConAcq):
                 NScopes = NScopes.union(scopes)
 
         else:
-            self.top_lvl_queries = self.top_lvl_queries + 1
+            self.metrics.increase_top_queries()
             if self.ask_query(Y):
                 self.remove_from_bias(kappa)
             else:

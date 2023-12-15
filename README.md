@@ -1,4 +1,4 @@
-This is the repository contains the code for the active constraint acquisition systems described in our CP2023 paper "Guided Bottom-up Interactive Constraint Acquisition".
+This repository contains the code for the active constraint acquisition systems described in our CP2023 paper "Guided Bottom-up Interactive Constraint Acquisition".
 
 You can cite as follows: "Tsouros, D. C., Berden, S., & Guns, T. (2023). Guided Bottom-up Interactive Constraint Acquisition. In: 29th International Conference on Principles and Practice of Constraint Programming, CP 2023, Toronto, Canada, 2023
 
