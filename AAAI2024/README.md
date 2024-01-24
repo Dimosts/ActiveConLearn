@@ -133,6 +133,6 @@ main.py [-h] -a {quacq,mquacq,mquacq2,mquacq2-a,growacq}
                         timetabling - the number of professors
 
 
-## Reproducing our AAAI 2024 experiments
+#### Reproducing our AAAI 2024 experiments
 
 see folder "experiment_run_files"
