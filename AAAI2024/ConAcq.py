@@ -536,12 +536,8 @@ class ConAcq:
                 else:
                     P_c = [0.1 for _ in B]
 
-            viol = intvar(0,len(B))
-            s += viol == sum([~v for v in V])
-            if self.debug_mode:
-                print(viol)
             objective = sum(
-                [~v * (1 - len(self.gamma) * ((1 / P_c[c]) <= math.log2(len(Y)))*viol) for
+                [~v * (1 - len(self.gamma) * ((1 / P_c[c]) <= math.log2(len(Y)))) for
                  v, c in zip(V, range(len(B)))])
 
         else:  # i.e., if self.obj == "class":
