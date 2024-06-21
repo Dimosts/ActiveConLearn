@@ -758,6 +758,8 @@ class ConAcq:
 
         # remove from original kappaB
         kappaBRY_removed = set(kappaBRY_prev) - set(kappaBRY)
+        if self.gfs:
+            proba = [proba[i] for i in range(len(proba)) if all(kappaB[i] is not c for c in kappaBRY_removed)]
         self.remove(kappaB, kappaBRY_removed)
 
         # R U S1
