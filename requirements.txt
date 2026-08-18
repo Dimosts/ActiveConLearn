@@ -1,0 +1,7 @@
+# Python dependencies for the Active Constraint Acquisition code (CP2023 and AAAI2024).
+# Versions pinned to a set validated to run both main.py entry points end to end.
+cpmpy==1.0.0
+ortools==9.15.6755
+scikit-learn==1.9.0
+numpy==2.4.4
+scipy==1.18.0

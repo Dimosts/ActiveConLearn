@@ -1,0 +1,4 @@
+{
+  "name": "Active Constraint Acquisition",
+  "install": "pip install --user -r requirements.txt"
+}
